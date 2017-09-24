@@ -16,3 +16,15 @@ CREATE TABLE screams (
   created_at timestamp with time zone NOT NULL,
   PRIMARY KEY (ID)
 );
+
+INSERT INTO users (id, username, password, first_name, last_name)
+  VALUES (1, 'jhcao', 'password', 'Johnathan', 'Cao');
+
+INSERT INTO users (id, username, password, first_name, last_name)
+  VALUES (2, 'robhunt', 'rhpw', 'Robert', 'Hunter');
+
+INSERT INTO users (id, username, password, first_name, last_name)
+  VALUES (3, 'jjgator', 'jjpw', 'Julie', 'Johnson');
+
+INSERT INTO users (id, username, password, first_name, last_name)
+  VALUES (4, 'reversmann', 'repass', 'Rachel', 'Eversmann');
