@@ -24,6 +24,7 @@ app.get('/login', function(req, res) {
   body = {
     username: 'luig0',
     password: 'pass1234'
+    // password: 'wrongpass'
   };
 
   db.findUser(body)
@@ -42,8 +43,12 @@ app.get('/login', function(req, res) {
       db.isCorrectPassword(body)
         .then(function(isMatch) {
           if(isMatch) {
+            res.cookie('username', body.username);
+            res.cookie('isLoggedIn', true);
             res.send('password is correct');
           } else {
+            res.cookie('username', null);
+            res.cookie('isLoggedIn', false);
             res.send('password is incorrect');
           }
         });
@@ -51,29 +56,59 @@ app.get('/login', function(req, res) {
 });
 
 app.get('/addUser', function(req, res) {
-  // var user = {
-  //   username: 'longhorns',
-  //   password: 'hashme',
-  //   first_name: 'go horns',
-  //   last_name: 'beat OU'
-  // };
-
   var user = {
-    username: 'luig0',
-    password: 'pass1234',
-    first_name: 'luig0_first',
-    last_name: 'luig0_last'
+    username: 'longhorns',
+    password: 'hashme',
+    first_name: 'go horns',
+    last_name: 'beat OU'
   };
+
+  // var user = {
+  //   username: 'luig0',
+  //   password: 'pass1234',
+  //   first_name: 'luig0_first',
+  //   last_name: 'luig0_last'
+  // };
 
   db.findUser(user)
     .then(function(result) {
       if(result.length > 0) {
         res.send('User already exists in db');
       } else {
-        db.addUser(user);
-        res.send('User added');
+        db.addUser(user)
+          .then(function(result) {
+            res.cookie('username', user.username);
+            res.cookie('isLoggedIn', true);
+            res.send('User added');
+          })
+          .catch(function (error) {
+            res.send('addUser catch: ', error);
+          });
       }
     })
+    .catch(function(error) {
+      res.send('findUser catch: ' + error);
+    });
+});
+
+app.get('/addScream', function(req, res) {
+  // need to require logged in cookie
+  var screamData = {
+    username: 'luig0',
+    volume: 1.375,
+    frequency: 1.0,
+    duration: 3.532
+  };
+
+  db.addScream(screamData)
+    .then(function(result) {
+      console.log('addScream method success');
+      res.send('Successfully added scream data');
+    })
+    .catch(function(error) {
+      console.log('addScream method failure');
+      res.send('Failed to add scream');
+    });
 });
 
 app.get('/profile', function(req, res) {
