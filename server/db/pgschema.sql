@@ -36,4 +36,9 @@ CREATE TABLE averages (
  PRIMARY KEY (ID)
 );
 
-
+CREATE TABLE user_scores (
+ id serial,
+ user_id int REFERENCES users(id) UNIQUE,
+ score int,
+ PRIMARY KEY (ID)
+);

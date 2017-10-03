@@ -105,6 +105,15 @@ app.get('/getAverage', function(req, res) {
     })
 });
 
+app.get('/getHighScores', function(req, res) {
+  // need to call function that gets user data and get user high scores
+
+  db.getHighScores()
+    .then(function(result) {
+      res.send(result);
+    })
+});
+
 /**************************************************
  *
  *  POST Requests:
