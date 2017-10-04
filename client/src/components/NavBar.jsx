@@ -13,15 +13,16 @@ var NavBar = (props) => (
         <MenuItem eventKey={'Profile'}>Your Graphs</MenuItem>
         <MenuItem eventKey={'StressForm'}>Daily Stress Form</MenuItem>
       </NavDropdown>
+      <NavItem eventKey={'scream'} href="#">Scream Page</NavItem>
     </Nav>
     {props.isLoggedIn === false ?
-    <Nav pullRight>
-      <NavItem  eventKey={'login'} href="#">Login</NavItem>
-      <NavItem  eventKey={'signup'} href="#">Sign Up</NavItem>
-    </Nav> :
-    <Nav pullRight>
-      <NavItem  eventKey={'logout'} href="#">Logout</NavItem>
-    </Nav>}
+      <Nav pullRight>
+        <NavItem  eventKey={'login'} href="#">Login</NavItem>
+        <NavItem  eventKey={'signup'} href="#">Sign Up</NavItem>
+      </Nav> :
+      <Nav pullRight>
+        <NavItem  eventKey={'logout'} href="#">Logout</NavItem>
+      </Nav>}
   </Navbar>
 )
 

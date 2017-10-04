@@ -31,25 +31,26 @@ class Profile extends React.Component {
 
   getAverage() {
     axios.get('/getAverage')
-      .then ( (result) => {
-	this.setState({stressLevel: result.data.stress_level});
-	if (result.data.length !== 0) {
-	  var averageData = JSON.parse(result.data.form_data);
-	  var newState = {};
-	  for(var key in formOptions) {
-	    var highest = 0;
-	    averageData[key].forEach( (el,i) => {
-	      if (el > highest) {
-		newState[key] = formOptions[key][i];
-		highest = el;
-	      }
-	    })
-	    if (newState[key] === undefined) {
-	      newState[key] = 'None';
-	    }
-	  }
-	  this.setState({top:newState});
-	}
+    .then ( (result) => {
+    	this.setState({stressLevel: result.data.stress_level});
+    	if (result.data.length !== 0) {
+    	  var averageData = JSON.parse(result.data.form_data);
+    	  var newState = {};
+    	  for(var key in formOptions) {
+    	    var highest = 0;
+    	    averageData[key].forEach( (el,i) => {
+    	      if (el > highest) {
+          		newState[key] = formOptions[key][i];
+          		highest = el;
+    	      }
+    	    })
+
+    	    if (newState[key] === undefined) {
+    	      newState[key] = 'None';
+    	    }
+    	  }
+    	  this.setState({top:newState});
+    	}
       })
   }
 
@@ -59,28 +60,28 @@ class Profile extends React.Component {
     // name: the name of the field that display in legend
     // color: what color is the line
     var chartSeries1 = [
-      {	 
-	field: 'volume',
-	name: 'Volume',
-	color: '#ff7f0e'
+      {
+      	field: 'volume',
+      	name: 'Volume',
+      	color: '#ff7f0e'
       }
     ];
 
     var	chartSeries2 = [
       {
-	field: 'lowfreq',
-	name: 'Low Frequency',
-	color: '#cabb6e'
+      	field: 'lowfreq',
+      	name: 'Low Frequency',
+      	color: '#cabb6e'
       },
       {
-	field: 'midfreq',
-	name: 'Mid Frequency',
-	color: '#123456'
+      	field: 'midfreq',
+      	name: 'Mid Frequency',
+      	color: '#123456'
       },
       {
-	field: 'highfreq',
-	name: 'High Frequency',
-	color: '#654321' 
+      	field: 'highfreq',
+      	name: 'High Frequency',
+      	color: '#654321'
       }
     ];
     // your x accessor
@@ -89,31 +90,23 @@ class Profile extends React.Component {
     };
     // have to hard code top
     return (
-      <Grid> 
-	<Row> <h1> Hi {this.props.user} </h1> </Row>	
-	<Row> Your average stress level is {this.state.stressLevel} </Row>
-	<Row> We have analzyed your data and think your top stressors are hanging out with <b> {this.state.top.people} </b> and  going to <b>{this.state.top.places}</b> </Row>
-	<Row>
-	  <Col md={8} mdOffset={2}>
-	    <LineChart showXGrid={false} showYGrid={false} title={'Scream Volumes'} data={this.state.screams} width={700} height={300} chartSeries={chartSeries1} x={x} />
-	  </Col>	
-	</Row>
-	<Row>
-	  <Col md={8} mdOffset={2}>
-	    <LineChart showXGrid={false} showYGrid={false} title={'Scream Frequency'} data={this.state.screams} width={700} height={300} chartSeries={chartSeries2} x={x} />
-	  </Col>
-	</Row>
-      </Grid> 
+      <Grid>
+      	<Row> <h1> Hi {this.props.user} </h1> </Row>
+      	<Row> Your average stress level is {this.state.stressLevel} </Row>
+      	<Row> We have analzyed your data and think your top stressors are hanging out with <b> {this.state.top.people} </b> and  going to <b>{this.state.top.places}</b> </Row>
+      	<Row>
+      	  <Col md={8} mdOffset={2}>
+      	    <LineChart showXGrid={false} showYGrid={false} title={'Scream Volumes'} data={this.state.screams} width={700} height={300} chartSeries={chartSeries1} x={x} />
+      	  </Col>
+      	</Row>
+      	<Row>
+      	  <Col md={8} mdOffset={2}>
+      	    <LineChart showXGrid={false} showYGrid={false} title={'Scream Frequency'} data={this.state.screams} width={700} height={300} chartSeries={chartSeries2} x={x} />
+      	  </Col>
+      	</Row>
+      </Grid>
     );
   }
 }
 
 export default Profile;
-
-
-
-
-
-
-
-
