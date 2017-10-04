@@ -1,7 +1,7 @@
-var mic; 
+var mic;
 var fft;
 
-var s = function(p) { 
+var s = function(p) {
 
   p.setup = function() {
     p.createCanvas(700,300);
@@ -41,12 +41,12 @@ export var getFreq = function() {
   ret.push(fft.getEnergy('lowMid'));
   ret.push(fft.getEnergy('mid'));
   ret.push(fft.getEnergy('highMid'));
-  return ret; 
+  return ret;
 }
 
 export var getMic = function() {
-  return mic; 
+  return mic;
 };
 
-export default new p5(s,'ScreamMeter');
-// ScreamMeter is the id that the graph is placed on  
+export default s;
+// ScreamMeter is the id that the graph is placed on

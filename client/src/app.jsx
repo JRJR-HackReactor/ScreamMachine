@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import NavBar from './components/NavBar.jsx';
 import Login from './components/Login.jsx';
 import Signup from './components/Signup.jsx';
+import Arcade from './components/Arcade.jsx';
 import Scream from './components/Scream.jsx';
 import Profile from './components/Profile.jsx';
 import StressForm from './components/StressForm.jsx';
@@ -13,7 +14,7 @@ class App extends React.Component {
   constructor() {
     super();
     this.state = {
-      page: 'scream',
+      page: 'Arcade',
       showSignup: false,
       showLogin: false,
       showSignup: false,
@@ -94,7 +95,7 @@ class App extends React.Component {
       }
     });
   }
-  
+
   /*
   Helper function that performs a GET request to check the session status of ther server.
   The session is the ultimate source of truth for a users login status.
@@ -129,6 +130,9 @@ class App extends React.Component {
     } else if (eventKey === 'signup') {
       //displays signup modal
       this.setState({showSignup: true});
+    } else if (eventKey === 'scream') {
+        //displays signup modal
+        this.setState({page: 'scream'});
     } else if (this.state.user !== null) {
       if (eventKey === 'Profile') {
         //renders profile page instead of scream page
@@ -148,6 +152,8 @@ class App extends React.Component {
     var page;
     if (this.state.page === 'scream') {
       page = <Scream user={this.state.user}/>;
+    } else if (this.state.page === 'Arcade') {
+      page = <Arcade user={this.state.user} />;
     } else if (this.state.page === 'Profile') {
       page = <Profile user={this.state.user} />;
     } else if (this.state.page === 'StressForm') {
@@ -165,7 +171,7 @@ class App extends React.Component {
         <Row>
           {page}
         </Row>
-      </Grid> 
+      </Grid>
     );
   }
 }

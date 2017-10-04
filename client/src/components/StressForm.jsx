@@ -1,16 +1,30 @@
 import React, {Component} from 'react';
-import {Checkbox, Button, FormGroup, Radio, inline} from 'react-bootstrap';
+import Checkbox from 'material-ui/Checkbox';
+import {
+  FormLabel,
+  FormControl,
+  FormGroup,
+  FormControlLabel,
+  FormHelperText,
+} from 'material-ui/Form';
+import Switch from 'material-ui/Switch'
+import Radio, { RadioGroup } from 'material-ui/Radio';
+import Button from 'material-ui/Button'
+import Typography from 'material-ui/Typography';
 import axios from 'axios';
+
+
 
 class StressForm extends React.Component {
 	constructor(props) {
 		super(props);
 		var selectedOptions = {};
-		for(var key in formOptions) { 
+		for(var key in formOptions) {
 			selectedOptions[key] = formOptions[key].map( (el) => {
-				return null; 
-			})	
+				return null;
+			})
 		}
+
 		this.state = {
 			stressLevel: 0,
 			selectedOptions: selectedOptions
@@ -23,11 +37,11 @@ class StressForm extends React.Component {
 
 	submit(e) {
 		e.preventDefault();
-		var isFirst = false; 
+		var isFirst = false;
 		// make request to get data from database
 		// if no data create empty one
 		var stressors = JSON.stringify(this.state.selectedOptions);
-		axios.post('/addForm', { 
+		axios.post('/addForm', {
 			params: {
 				username: this.props.user,
 				stress_level: this.state.stressLevel,
@@ -43,10 +57,10 @@ class StressForm extends React.Component {
 						var avgStress = this.state.stressLevel;
 						// make a object with 0's in every element of the array since there is no old data
 						var oldData = {};
-						for(var key in this.state.selectedOptions) { 
+						for(var key in this.state.selectedOptions) {
 								oldData[key] = this.state.selectedOptions[key].map( (el) => {
-								return 0; 
-							})	
+								return 0;
+							})
 						}
 					} else {
 						var avgStress = result.data.stress_level;
@@ -64,11 +78,11 @@ class StressForm extends React.Component {
 									num = this.state.stressLevel;
 								} else {
 								// get average
-									num = (el + this.state.stressLevel)/2; 
+									num = (el + this.state.stressLevel)/2;
 								}
 							} else {
 								num = el;
-							} 
+							}
 							newAvg[key].push(num);
 						})
 					}
@@ -84,7 +98,7 @@ class StressForm extends React.Component {
 						.then( () =>{
 							this.props.func();
 						})
-				})				
+				})
 		})
 	}
 
@@ -100,7 +114,7 @@ class StressForm extends React.Component {
 				} else {
 					newState[key][index] = null;
 				}
-			} 
+			}
 		}
 		this.setState({selectedOptions: newState});
 	}
@@ -110,38 +124,39 @@ class StressForm extends React.Component {
 	}
 
 	render(props) {
-		
-		// need to do this for all catagories because you need to added text to display for the user 
+
+		// need to do this for all catagories because you need to added text to display for the user
 		var peopleCheckbox = formOptions.people.map( (el,i) => {
-			return <Checkbox onChange={this.addChecked} value={el} key={i}>{el} </Checkbox>	
+			return <FormControlLabel control={<Checkbox onChange={this.addChecked} value={el} key={i} />} label={el} key={i}/>
 		})
 		var placeCheckbox = formOptions.places.map( (el, i) => {
-			return <Checkbox onChange={this.addChecked} value={el} key={i}>{el} </Checkbox>
+			return <FormControlLabel control={<Checkbox onChange={this.addChecked} value={el} key={i} />} label={el} key={i}/>
 		})
 
 		return (
 			<form onSubmit={this.submit}>
-				<div> Who did you hangout with today? </div>
-				{peopleCheckbox}
-				<div> Where where you today? </div>
-				{placeCheckbox}
-				<div> How stressed were you today? </div>
-				<FormGroup onChange={this.stressLevel}> 
-					<Radio name='stressLevel' value='0' inline> 0 </Radio> 
-					<Radio name='stressLevel' value='1' inline> 1 </Radio> 
-					<Radio name='stressLevel' value='2' inline> 2 </Radio>
-					<Radio name='stressLevel' value='3' inline> 3 </Radio>
-					<Radio name='stressLevel' value='4' inline> 4 </Radio>
-					<Radio name='stressLevel' value='5' inline> 5 </Radio>
-					<Radio name='stressLevel' value='6' inline> 6 </Radio>
-					<Radio name='stressLevel' value='7' inline> 7 </Radio>
-					<Radio name='stressLevel' value='8' inline> 8 </Radio>
-					<Radio name='stressLevel' value='9' inline> 9 </Radio>
-					<Radio name='stressLevel' value='10' inline> 10 </Radio>
-				</FormGroup>
-				<Button type='submit'> Submit </Button>
+				<Typography type='title'> Who did you hangout with today? </Typography>
+					{peopleCheckbox}
+				<Typography type='title'> Where where you today? </Typography>
+					{placeCheckbox}
+				<Typography type='title'> How stressed were you today? </Typography>
+				<RadioGroup value={this.state.stressLevel} onChange={this.stressLevel}>
+					<FormControlLabel control={<Radio value='0' name='stressLevel'/>} label='0' />
+					<FormControlLabel control={<Radio value='1' name='stressLevel'/>} label='1' />
+					<FormControlLabel control={<Radio value='2' name='stressLevel'/>} label='2' />
+					<FormControlLabel control={<Radio value='3' name='stressLevel'/>} label='3' />
+					<FormControlLabel control={<Radio value='4' name='stressLevel'/>} label='4' />
+					<FormControlLabel control={<Radio value='5' name='stressLevel'/>} label='5' />
+					<FormControlLabel control={<Radio value='6' name='stressLevel'/>} label='6' />
+					<FormControlLabel control={<Radio value='7' name='stressLevel'/>} label='7' />
+					<FormControlLabel control={<Radio value='8' name='stressLevel'/>} label='8' />
+					<FormControlLabel control={<Radio value='9' name='stressLevel'/>} label='9' />
+					<FormControlLabel control={<Radio value='10' name='stressLevel'/>} label='10' />
+				</RadioGroup>
+				<Button raised type='submit'> Submit </Button>
 			</form>
 		)}
+
 }
 
 window.formOptions = {

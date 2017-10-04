@@ -10,7 +10,7 @@ button {
 }
 
 .gif {
-  height: 320px; 
+  height: 320px;
   position: relative;
 }
 
@@ -24,7 +24,7 @@ button {
 #screambutton {
 	width: 200px;
   height: 40px;
-	font-size: 22px; 
+	font-size: 22px;
 	font-weight: bold;
   display: inline-block;
 }
@@ -101,5 +101,3 @@ button {
   margin-left: 42px;
   color: #626060;
 }
-
-
