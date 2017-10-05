@@ -4,6 +4,7 @@ import Login from './components/Login.jsx';
 import Signup from './components/Signup.jsx';
 import Scream from './components/Scream.jsx';
 import Profile from './components/Profile.jsx';
+import Arcade from './components/Arcade.jsx';
 import StressForm from './components/StressForm.jsx';
 import {Row,Grid,Col,Button} from 'react-bootstrap';
 import axios from 'axios';
@@ -13,10 +14,9 @@ class App extends React.Component {
   constructor() {
     super();
     this.state = {
-      page: 'scream',
+      page: 'Arcade',
       showSignup: false,
       showLogin: false,
-      showSignup: false,
       isLoggedIn: false,
       user: null,
     };
@@ -24,7 +24,7 @@ class App extends React.Component {
     this.closeModal = this.closeModal.bind(this);
     this.login = this.login.bind(this);
     this.signup = this.signup.bind(this);
-    this.goToProfile = this.goToProfile.bind(this);
+    this.showLegacy = this.showLegacy.bind(this);
     this.getLoginStatus();
   }
 
@@ -88,13 +88,13 @@ class App extends React.Component {
       } else {
         context.setState({
           isLoggedIn: true,
-          user: username
+          user: result.data
         });
         context.closeModal();
       }
     });
   }
-  
+
   /*
   Helper function that performs a GET request to check the session status of ther server.
   The session is the ultimate source of truth for a users login status.
@@ -109,13 +109,14 @@ class App extends React.Component {
         if(results.data.isLoggedIn !== status.state.isLoggedIn) {
           status.setState({
             isLoggedIn: true,
-            user: results.data.username
+            user: results.data
           });
         }
       });
   }
 
   //handles all events from the nav bar
+  //PG - may need to rewrite all These
   navClickHandler(eventKey) {
     if (eventKey === 'logout') {
       this.setState({
@@ -140,33 +141,33 @@ class App extends React.Component {
     }
   }
 
-  goToProfile() {
-    this.setState({page: 'Profile'});
+  showLegacy() {
+    if (this.state.page === 'Arcade'){
+      this.setState({ page: 'scream' })
+    } else {
+      this.setState({ page: 'Arcade' })
+    }
   }
 
   render() {
     var page;
     if (this.state.page === 'scream') {
       page = <Scream user={this.state.user}/>;
+    } else if (this.state.page === 'Arcade') {
+      page = <Arcade />;
     } else if (this.state.page === 'Profile') {
       page = <Profile user={this.state.user} />;
     } else if (this.state.page === 'StressForm') {
-      page = <StressForm user={this.state.user} func={this.goToProfile}/>;
+      page = <StressForm user={this.state.user}/>;
     } else {
       page = <div> Page did not load </div>
     }
     return (
-      <Grid>
-        <Row><Login closeModal={this.closeModal} showLogin={this.state.showLogin} login={this.login} /></Row>
-        <Row> <Signup closeModal={this.closeModal} showSignup={this.state.showSignup} signup={this.signup}/> </Row>
-        <Row>
-          <NavBar isLoggedIn={this.state.isLoggedIn} func={this.navClickHandler} />
-        </Row>
-        <Row>
-          {page}
-        </Row>
-      </Grid> 
-    );
+      <div>
+        <NavBar isLoggedIn={this.state.isLoggedIn} showLegacy={this.showLegacy} page={this.state.page}/>
+        <Signup closeModal={this.closeModal} showSignup={this.state.showSignup} signup={this.signup}/>
+      </div>
+    )
   }
 }
 export default App;

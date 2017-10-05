@@ -1,24 +1,47 @@
 import React from 'react';
-import {Modal, Button} from 'react-bootstrap';
+import Button from 'material-ui/Button';
+import TextField from 'material-ui/TextField';
+import Dialog, {
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle
+} from 'material-ui/Dialog';
 
-const Login = (props) => (
-  <div className="static-modal">
-		<Modal show={props.showLogin}>
-	  	<Modal.Header>
-	    	<Modal.Title>Login</Modal.Title>
-	  	</Modal.Header>
-	  	<Modal.Body>
-		    <label>Username:</label>
-		    <input placeholder='username' id='username'></input><br/>
-		    <label>Password:</label>
-		    <input placeholder='password' id='password' type='password'></input>
-	  	</Modal.Body>
-	  	<Modal.Footer>
-		    <Button onClick={props.closeModal}>Close</Button>
-		    <Button bsStyle="primary" onClick={props.login}>Sign In</Button>
-	  	</Modal.Footer>
-		</Modal>
-  </div>
-)
+class Login extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      open: false
+    }
+  }
+
+  handleOpen() {
+    this.setState({ open: true })
+  }
+
+  handleClose() {
+    this.setState({ open: false })
+  }
+
+  render() {
+    return (
+      <div className="loginButton">
+        <Button onClick={this.handleOpen.bind(this)}>Login</Button>
+        <Dialog open={this.state.open} onRequestClose={this.handleClose.bind(this)}>
+          <DialogTitle>{'Subscribe'}</DialogTitle>
+          <DialogContent>
+            <TextField autoFocus id="username" label="username" />
+            <TextField autoFocus id="password" label="password" type="password" />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleClose.bind(this)}>Cancel</Button>
+            <Button onClick={this.handleClose.bind(this)}>Submit</Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+    )
+  }
+}
 
 export default Login;

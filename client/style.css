@@ -10,7 +10,7 @@ button {
 }
 
 .gif {
-  height: 320px; 
+  height: 320px;
   position: relative;
 }
 
@@ -24,14 +24,12 @@ button {
 #screambutton {
 	width: 200px;
   height: 40px;
-	font-size: 22px; 
+	font-size: 22px;
 	font-weight: bold;
-  display: inline-block;
 }
 
 .screambutton {
   width: 200px;
-  padding-left: 55px;
   padding-bottom: 12px;
 }
 
@@ -61,6 +59,10 @@ button {
 
 .screambutton {
   display: inline-block;
+}
+
+#formsubmit {
+  padding-top: 15px;
 }
 
 #saveButton {
@@ -102,4 +104,62 @@ button {
   color: #626060;
 }
 
+#stressform {
+  margin-left: 100
+}
 
+.striker {
+  text-align: center;
+}
+
+.striker input[type='range'] {
+  outline: none;
+  height: 30px;
+  overflow: hidden;
+  cursor: pointer;
+}
+.striker input[type='range'],
+.striker input[type='range']::-webkit-slider-runnable-track,
+.striker input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+}
+.striker input[type='range']::-webkit-slider-runnable-track {
+  width: 200px;
+  height: 10px;
+  background: #AAA;
+}
+.striker input[type='range']::-webkit-slider-thumb {
+  position: relative;
+  height: 50px;
+  width: 6px;
+  margin-top: -20px;
+  background: red;
+}
+.striker input[type='range']::-webkit-slider-thumb::before {
+  position: absolute;
+  content: '';
+  height: 10px; /* equal to height of runnable track */
+  width: 500px; /* make this bigger than the widest range input element */
+  left: -502px; /* this should be -2px - width */
+  top: 8px; /* don't change this */
+  background: #777;
+}
+
+.striker .confetti {
+  left: 60px;
+  top: 50px;
+}
+
+.formtitle {
+  padding-top: 15px;
+}
+
+.sharebutton {
+  display: inline-block;
+  padding-right: 10px;
+  padding-top: 5px;
+}
+
+.levelEndText {
+  padding-top: 20px;
+}
