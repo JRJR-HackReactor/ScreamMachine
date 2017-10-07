@@ -10,7 +10,7 @@ button {
 }
 
 .gif {
-  height: 320px; 
+  height: 320px;
   position: relative;
 }
 
@@ -24,28 +24,17 @@ button {
 #screambutton {
 	width: 200px;
   height: 40px;
-	font-size: 22px; 
+	font-size: 22px;
 	font-weight: bold;
-  display: inline-block;
 }
 
 .screambutton {
   width: 200px;
-  padding-left: 55px;
   padding-bottom: 12px;
 }
 
 #screambutton:hover {
 	background-color: aliceblue;
-}
-
-.NavBar {
-  background-color: #d9edf7;
-  color: black;
-}
-
-.navbar .navbar-nav>li>a {
-  color: #626060;
 }
 
 .btn {
@@ -54,13 +43,17 @@ button {
   background-color: #d9edf7;
 }
 
-.score {
+#screamscore {
   padding: 6px;
-  font-size: 65px;
+  font-size: 60px;
 }
 
 .screambutton {
   display: inline-block;
+}
+
+#formsubmit {
+  padding-top: 15px;
 }
 
 #saveButton {
@@ -92,6 +85,7 @@ button {
 #afterFreeman {
   margin: 12px;
   margin-top: 6px;
+  padding-bottom: 50px
 }
 
 #clickPlay {
@@ -99,7 +93,99 @@ button {
   font-size: 15px;
   align-content: center;
   margin-left: 42px;
+  padding-bottom: 50px;
   color: #626060;
 }
 
+#stressform {
+  margin-left: 100
+}
 
+.striker {
+  text-align: center;
+}
+
+.striker input[type='range'] {
+  outline: none;
+  height: 30px;
+  overflow: hidden;
+  cursor: default;
+}
+.striker input[type='range'],
+.striker input[type='range']::-webkit-slider-runnable-track,
+.striker input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+}
+.striker input[type='range']::-webkit-slider-runnable-track {
+  width: 200px;
+  height: 10px;
+  background: #bfbfbf;
+}
+.striker input[type='range']::-webkit-slider-thumb {
+  position: relative;
+  height: 50px;
+  width: 6px;
+  margin-top: -20px;
+  background: #ed1b24;
+}
+.striker input[type='range']::-webkit-slider-thumb::before {
+  position: absolute;
+  content: '';
+  height: 10px; /* equal to height of runnable track */
+  width: 500px; /* make this bigger than the widest range input element */
+  left: -502px; /* this should be -2px - width */
+  top: 8px; /* don't change this */
+  background: #777;
+}
+
+.striker .confetti {
+  /*left: 60px;
+  top: 50px;*/
+  position: fixed !important;
+  top: 50%;
+  left: 50%;
+  z-index: 999999999999;
+}
+
+.striker .ring {
+  animation: shake 0.3s linear;
+}
+
+@-webkit-keyframes shake {
+	0% { transform: translate(2px, 0px) }
+	10% { transform: translate(-1px, -1px)}
+	20% { transform: translate(-2px, 0px)}
+	30% { transform: translate(0px, 1px) }
+	40% { transform: translate(1px, -1px)}
+	50% { transform: translate(-1px, 0px)}
+	60% { transform: translate(-2px, 0px) }
+	70% { transform: translate(2px, 0px)}
+	80% { transform: translate(-1px, -1px)}
+	90% { transform: translate(2px, 0px) }
+	100% { transform: translate(1px, -1px)}
+}
+
+.formtitle {
+  padding-top: 15px;
+}
+
+.sharebutton {
+  display: inline-block;
+  padding-right: 10px;
+  padding-top: 5px;
+}
+
+.levelEndText {
+  padding-top: 20px;
+}
+
+.score {
+  font-size: 20;
+  font-weight: bold;
+  text-align: center;
+  padding-bottom: 15;
+}
+
+.float-container {
+  z-index: -1;
+}

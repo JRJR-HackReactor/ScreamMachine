@@ -13,23 +13,18 @@ const { Pool } = require('pg');
 //    to be able to easily switch between them
 
 var config = {
-  aws: {
-    host: 'localhost',
-    user: 'postgres',
-    password: 'admin',
-    database: 'scream'
-  },
-  jc_aws: {
-    host: 'ec2-34-229-151-217.compute-1.amazonaws.com',
-    user: 'postgres',
-    password: 'admin',
-    database: 'scream'
+  heroku: {
+    host: 'ec2-54-235-88-58.compute-1.amazonaws.com',
+    user: 'lnhhqcwwfkgyqw',
+    password: '0d85baa1e330fd21e90afe335cf0bd9a32bb117f6cb785914114c9848bf1cb74',
+    database: 'd461kk2fe556bm',
+    ssl: true
   }
 };
 
 // Use the following line to choose your Postgres config from above:
 
-const pool = new Pool(config['aws']);
+const pool = new Pool(config['heroku']);
 
 // Following functions are mostly split by GETTERS and SETTERS
 //  Exceptions are: [ findUser, isCorrectPassword ]
@@ -44,7 +39,7 @@ const pool = new Pool(config['aws']);
 
 module.exports = {
   getUsers: function () {
-    return pool.query("SELECT username, first_name, last_name FROM users")
+    return pool.query("SELECT * FROM users")
       .then(function(result) {
         return result.rows;
       })
@@ -73,7 +68,7 @@ module.exports = {
       })
       .catch(function(error) {
         console.log('getScream query fail');
-        return error; 
+        return error;
       });
   },
 
@@ -96,7 +91,7 @@ module.exports = {
       })
       .catch(function(error) {
         console.log('getForm query fail');
-        return error; 
+        return error;
       });
   },
 
@@ -119,8 +114,36 @@ module.exports = {
       })
       .catch(function(error) {
         console.log('getAverage query fail');
-        return error; 
+        return error;
       });
+  },
+
+  getHighScores: function() {
+    //return top five scores from database with the users associated
+    return pool.query("SELECT user_scores.score, users.first_name, users.last_name, users.github_username FROM user_scores INNER JOIN users ON user_scores.user_id = users.id ORDER BY user_scores.score DESC limit 8")
+    .then(function(result){
+      return result.rows;
+    })
+    .catch(function(err){
+      console.log(err);
+    });
+  },
+
+  getUserData: function(user) {
+    return pool.query("SELECT * FROM users WHERE username = '" + user.username + "'")
+    .then(function(result){
+      return result.rows[0];
+    })
+    .catch(function(err){
+      console.log(err);
+    });
+  },
+
+  getHighScore: function(user) {
+    return pool.query("SELECT score FROM user_scores WHERE user_id = '" + user.id + "'")
+    .then(function(result){
+      return result.rows;
+    })
   },
 
   findUser: function(user) {
@@ -149,9 +172,9 @@ module.exports = {
         user.password = hash;
 
         // changed query from obj to string
-        let query = 'INSERT INTO users(username, password, first_name, last_name) VALUES($1, $2, $3, $4)';
+        let query = 'INSERT INTO users(username, password, first_name, last_name, github_username) VALUES($1, $2, $3, $4, $5)';
 
-        return pool.query(query, [ user.username, user.password, user.first_name, user.last_name ])
+        return pool.query(query, [ user.username, user.password, user.first_name, user.last_name, user.github_username ])
           .then(function(result) {
             console.log('db.index.js, succcess: ', result.rows);
             return result.rows;
@@ -196,7 +219,7 @@ module.exports = {
 
     // changed query from obj to string
     let query = 'INSERT INTO screams (user_id, volume, lowFreq, midFreq, highFreq) VALUES ( (SELECT id FROM users WHERE username=$1), $2, $3, $4, $5);'
-    
+
     return pool.query(query,[data.username, data.volume, data.lowFreq, data.midFreq, data.highFreq])
       .then(function(result) {
         console.log('addScream query success');
@@ -209,8 +232,8 @@ module.exports = {
   },
 
   addForm: function(data) {
-    /*  
-     *  data should be object of following structure: 
+    /*
+     *  data should be object of following structure:
      *  {
      *    username: 'username',
      *    stress_level: 0,
@@ -233,8 +256,8 @@ module.exports = {
   },
 
   addAverages: function(data) {
-    /*  
-     *  data should be object of following structure: 
+    /*
+     *  data should be object of following structure:
      *  {
      *    username: 'username',
      *    stress_level: 0,
@@ -242,13 +265,24 @@ module.exports = {
      *  }
      *
      */
-    console.log(data);
     // changed query from obj to string
+    console.log('data in db averages:', data)
     if (data.isFirst) {
       var query = 'INSERT INTO averages (user_id, stress_level, form_data) VALUES ( (SELECT id from users WHERE username=$3), $1, $2)';
     } else {
       var query = 'UPDATE averages SET stress_level = $1, form_data = $2 WHERE user_id = (SELECT id FROM users WHERE username=$3);'
     }
      return pool.query(query,[data.stress_level, data.form_data, data.username]);
+  },
+
+  addScore: function(user, score) {
+    return pool.query(`SELECT * FROM user_scores WHERE user_id = ${user.id}`)
+    .then(function(data) {
+      if (data.rows.length === 0) {
+        return pool.query(`INSERT INTO user_scores (user_id, score) VALUES (${user.id}, ${score})`)
+      } else {
+        return pool.query(`UPDATE user_scores SET score = ${score} WHERE user_id = ${user.id}`)
+      }
+    })
   }
 }

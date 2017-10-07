@@ -4,6 +4,7 @@ CREATE TABLE users (
   password varchar(255),
   first_name varchar(255),
   last_name varchar(255),
+  github_username varchar(255),
   PRIMARY KEY (ID)
 );
 
@@ -36,4 +37,9 @@ CREATE TABLE averages (
  PRIMARY KEY (ID)
 );
 
-
+CREATE TABLE user_scores (
+ id serial,
+ user_id int REFERENCES users(id) UNIQUE,
+ score int,
+ PRIMARY KEY (ID)
+);
