@@ -1,28 +1,40 @@
 import React from 'react';
-import {Navbar, Nav, NavItem, NavDropdown, MenuItem} from 'react-bootstrap';
+import PropTypes from 'prop-types';
+import { withStyles } from 'material-ui/styles';
+import AppBar from 'material-ui/AppBar';
+import Toolbar from 'material-ui/Toolbar';
+import Typography from 'material-ui/Typography';
+import Button from 'material-ui/Button';
+import IconButton from 'material-ui/IconButton';
+import MenuIcon from 'material-ui-icons/Menu';
+import LegacySwitch from './LegacySwitch.jsx';
+import Login from './Login.jsx';
+import Signup from './Signup.jsx';
+import NavProfile from './NavProfile.jsx';
 
-var NavBar = (props) => (
-  <Navbar className='NavBar' onSelect={props.func} >
-    <Navbar.Header>
-      <Navbar.Brand>
-        <a href='/'>Scream Machine</a>
-      </Navbar.Brand>
-    </Navbar.Header>
-    <Nav>
-      <NavDropdown title="Profile" id="basic-nav-dropdown">
-        <MenuItem eventKey={'Profile'}>Your Graphs</MenuItem>
-        <MenuItem eventKey={'StressForm'}>Daily Stress Form</MenuItem>
-      </NavDropdown>
-    </Nav>
-    {props.isLoggedIn === false ?
-    <Nav pullRight>
-      <NavItem  eventKey={'login'} href="#">Login</NavItem>
-      <NavItem  eventKey={'signup'} href="#">Sign Up</NavItem>
-    </Nav> :
-    <Nav pullRight>
-      <NavItem  eventKey={'logout'} href="#">Logout</NavItem>
-    </Nav>}
-  </Navbar>
-)
+const NavBar = ({ showLegacy, login, logout, user, isLoggedIn, signup, page, navHandler}) => {
+    const background = page === 'Arcade' ? 'primary' : 'accent';
+    return (
+      <AppBar position="absolute" color={background}>
+        <Toolbar>
+          <div style={{ flex: 1 }}>
+            <LegacySwitch showLegacy={showLegacy} page={page}/>
+          </div>
+          {((page === 'Legacy' || page === 'Profile' || page === 'StressForm') && isLoggedIn) &&
+            <NavProfile navHandler={navHandler}/>
+          }
+          <Signup signup={signup} isLoggedIn={isLoggedIn} page={page}/>
+          <Login
+          user={user}
+          login={login}
+          logout={logout}
+          isLoggedIn={isLoggedIn}
+          className="login"
+          page={page}
+          />
+        </Toolbar>
+      </AppBar>
+    )
+}
 
-export default NavBar
+export default NavBar;

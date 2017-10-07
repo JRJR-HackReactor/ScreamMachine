@@ -4,26 +4,39 @@ import Login from './components/Login.jsx';
 import Signup from './components/Signup.jsx';
 import Scream from './components/Scream.jsx';
 import Profile from './components/Profile.jsx';
+import Arcade from './components/Arcade.jsx';
 import StressForm from './components/StressForm.jsx';
 import {Row,Grid,Col,Button} from 'react-bootstrap';
 import axios from 'axios';
+import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
+import { lightBlue, red } from 'material-ui/colors';
+
+const theme = createMuiTheme({
+  palette: {
+    primary: red,
+    secondary: lightBlue,
+    error: red
+  }
+});
 
 class App extends React.Component {
 
   constructor() {
     super();
     this.state = {
-      page: 'scream',
+      page: 'Arcade',
       showSignup: false,
       showLogin: false,
-      showSignup: false,
       isLoggedIn: false,
       user: null,
     };
+
     this.navClickHandler = this.navClickHandler.bind(this);
     this.closeModal = this.closeModal.bind(this);
     this.login = this.login.bind(this);
+    this.logout = this.logout.bind(this);
     this.signup = this.signup.bind(this);
+    this.showLegacy = this.showLegacy.bind(this);
     this.goToProfile = this.goToProfile.bind(this);
     this.getLoginStatus();
   }
@@ -36,9 +49,7 @@ class App extends React.Component {
     });
   }
 
-  login() {
-    let username = document.getElementById('username').value;
-    let password = document.getElementById('password').value;
+  login(user) {
     const notFound = 'We were unable to locate an account with that username. Please try again or go back to the home page and create a new account.'
     const incorrectPW = 'The username and password do not match. Please try again.'
     let context = this;
@@ -46,8 +57,8 @@ class App extends React.Component {
       method: 'post',
       url: '/login',
       data: {
-        username: username,
-        password: password
+        username: user.username,
+        password: user.password
       }
     })
     .then(function(result) {
@@ -58,28 +69,25 @@ class App extends React.Component {
       } else {
         context.setState({
         	isLoggedIn: true,
-        	user: username
+        	user: result.data
         });
         context.closeModal();
       }
     });
   }
 
-  signup() {
-    let username = document.getElementById('username').value;
-    let password = document.getElementById('password').value;
-    let firstname = document.getElementById('firstname').value;
-    let lastname = document.getElementById('lastname').value;
+  signup(user) {
     const userTaken = 'That username is already taken. Please choose a different username.'
     let context = this;
     axios({
       method: 'post',
       url: '/addUser',
       data: {
-        username: username,
-        password: password,
-        first_name: firstname,
-        last_name: lastname
+        username: user.username,
+        password: user.password,
+        first_name: user.firstname,
+        last_name: user.lastname,
+        github_username: user.github_username
       }
     })
     .then(function(result) {
@@ -88,13 +96,13 @@ class App extends React.Component {
       } else {
         context.setState({
           isLoggedIn: true,
-          user: username
+          user: result.data
         });
         context.closeModal();
       }
     });
   }
-  
+
   /*
   Helper function that performs a GET request to check the session status of ther server.
   The session is the ultimate source of truth for a users login status.
@@ -106,67 +114,93 @@ class App extends React.Component {
     let status = this;
     axios.get('/getStatus')
       .then((results) => {
-        if(results.data.isLoggedIn !== status.state.isLoggedIn) {
           status.setState({
-            isLoggedIn: true,
-            user: results.data.username
+            isLoggedIn: results.isLoggedIn,
+            user: results.data.user
           });
-        }
       });
   }
 
-  //handles all events from the nav bar
+  // handles all events from the nav bar
   navClickHandler(eventKey) {
-    if (eventKey === 'logout') {
-      this.setState({
-        user: null,
-        isLoggedIn: false
-      });
-      //should logout somehow (MAGIC, obviously)
-    } else if (eventKey === 'login') {
-      //displays login modal
-      this.setState({showLogin: true});
-    } else if (eventKey === 'signup') {
-      //displays signup modal
-      this.setState({showSignup: true});
-    } else if (this.state.user !== null) {
+    if (this.state.user !== null) {
       if (eventKey === 'Profile') {
-        //renders profile page instead of scream page
+        //renders profile page instead of Legacy page
         this.setState({page: 'Profile'});
       } else if (eventKey === 'StressForm')  {
         //goes to daily stress form
         this.setState({page: 'StressForm'});
+      } else if (eventKey === 'Legacy') {
+        this.setState({page: 'Legacy'})
       }
     }
+  }
+
+  showLegacy() {
+    if (this.state.page === 'Arcade'){
+      this.setState({ page: 'Legacy' })
+    } else {
+      this.setState({ page: 'Arcade' })
+    }
+  }
+
+  logout() {
+    axios.get('/logout')
+    .then( () => {
+      this.setState({
+        user: null,
+        isLoggedIn: false
+      })
+    })
   }
 
   goToProfile() {
     this.setState({page: 'Profile'});
   }
 
+  updateUserScore(score) {
+    if (score > this.state.user.personalBest){
+      var user = this.state.user;
+      user.personalBest = score;
+      this.setState({
+        user: user
+      })
+    }
+  }
+
   render() {
     var page;
-    if (this.state.page === 'scream') {
+    if (this.state.page === 'Legacy') {
       page = <Scream user={this.state.user}/>;
+    } else if (this.state.page === 'Arcade') {
+      page = <Arcade user={this.state.user} updateUserScore={this.updateUserScore.bind(this)}/>;
     } else if (this.state.page === 'Profile') {
-      page = <Profile user={this.state.user} />;
+      page = <Profile user={this.state.user}/>;
     } else if (this.state.page === 'StressForm') {
       page = <StressForm user={this.state.user} func={this.goToProfile}/>;
     } else {
       page = <div> Page did not load </div>
     }
     return (
-      <Grid>
-        <Row><Login closeModal={this.closeModal} showLogin={this.state.showLogin} login={this.login} /></Row>
-        <Row> <Signup closeModal={this.closeModal} showSignup={this.state.showSignup} signup={this.signup}/> </Row>
-        <Row>
-          <NavBar isLoggedIn={this.state.isLoggedIn} func={this.navClickHandler} />
-        </Row>
-        <Row>
-          {page}
-        </Row>
-      </Grid> 
-    );
+      <MuiThemeProvider theme={theme}>
+        <div>
+          <NavBar
+            user={this.state.user}
+            isLoggedIn={this.state.isLoggedIn}
+            showLegacy={this.showLegacy}
+            page={this.state.page}
+            login={this.login}
+            logout={this.logout}
+            signup={this.signup}
+            navHandler={this.navClickHandler}
+            func={this.goToProfile}
+          />
+          <div style={{marginTop:65}}>
+            {page}
+          </div>
+        </div>
+      </MuiThemeProvider>
+    )
   }
 }
 export default App;

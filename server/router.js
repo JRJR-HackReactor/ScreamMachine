@@ -44,11 +44,32 @@ update state accordingly
 */
 app.get('/getStatus', function(req, res) {
 	// console.log('This is the current req session ',req.session.isLoggedIn);
-	let sessionObj = {
-		isLoggedIn : req.session.isLoggedIn || false,
-		username: req.session.username || undefined
+
+	if (req.session.username) {
+		db.getUserData({username: req.session.username})
+		.then(function(userObj){
+			return db.getHighScore(userObj)
+			.then((result) => {
+				if (result.length > 0) {
+					userObj.personalBest = result[0].score
+				} else {
+					userObj.personalBest = 1;
+				}
+				let sessionObj = {
+					isLoggedIn : req.session.isLoggedIn || false,
+					user: userObj
+				}
+				res.send(sessionObj);
+			})
+		})
+	} else {
+		let sessionObj = {
+			isLoggedIn : false,
+			user: null
+		}
+		res.send(sessionObj);
 	}
-	res.send(sessionObj);
+
 });
 
 app.get('/getUsers', function(req, res) {
@@ -105,6 +126,19 @@ app.get('/getAverage', function(req, res) {
     })
 });
 
+app.get('/getHighScores', function(req, res) {
+
+  db.getHighScores()
+    .then(function(result) {
+      res.send(result);
+    })
+});
+
+app.get('/logout', function(req, res) {
+	req.session.destroy()
+	res.send('Logged out');
+})
+
 /**************************************************
  *
  *  POST Requests:
@@ -128,22 +162,27 @@ app.post('/login', function(req, res) {
       db.isCorrectPassword(req.body)
         .then(function(isMatch) {
           if(isMatch) {
-            // res.cookie('username', req.body.username); // Use the session
-            // res.cookie('isLoggedIn', true);            // Use the session
 						req.session.isLoggedIn = true;
 						req.session.username = req.body.username;
-            res.send('Password is correct; session established');
-            //Adding session info below to test
           } else {
-            // res.cookie('username', null);              // Use the session
-            // res.cookie('isLoggedIn', false);           // Use the session
-            //adding session info below to test
-            //will check user state with presence of a session ID instead of checking username;
             req.session.destroy();
-            res.send('password is incorrect');
           }
         });
     })
+		.then(function() {
+			db.getUserData(req.body)
+			.then(function(userObj){
+				return db.getHighScore(userObj)
+				.then((result) => {
+					if (result.length > 0) {
+						userObj.personalBest = result[0].score
+					} else {
+						userObj.personalBest = 1;
+					}
+					res.send(userObj)
+				})
+			})
+		})
     .catch(function(err) {
       res.send(err);
     });
@@ -152,39 +191,44 @@ app.post('/login', function(req, res) {
 
 // Endpoint /addUser is used for signup
 app.post('/addUser', function(req, res) {
-  console.log('/addUser, req.body: ', req.body);
 
   var user = req.body;
 
   db.findUser(user)
-    .then(function(result) {
+  .then(function(result) {
       if(result.length > 0) {
         res.send('User already exists in db');
       } else {
         db.addUser(user)
-          .then(function(result) {
-            // res.cookie('username', user.username);
-            // res.cookie('isLoggedIn', true);
-            //Adding session method for testing
-            req.session.username = user.username;
-            req.session.isLoggedIn = true;
-            res.send('User added');
-          })
-          .catch(function (error) {
-            res.send('addUser catch: ', error);
-          });
-      }
-    })
-    .catch(function(error) {
-      res.send('findUser catch: ' + error);
-    });
+        .then(function(result) {
+          req.session.username = user.username;
+          req.session.isLoggedIn = true;
+        })
+				.then(function() {
+					db.getUserData(user)
+					.then(function(userObj){
+						return db.getHighScore(userObj)
+						.then((result) => {
+							if (result.length > 0) {
+								userObj.personalBest = result[0].score
+							} else {
+								userObj.personalBest = 1;
+							}
+							res.send(userObj)
+						})
+					})
+				})
+		    .catch(function(error) {
+    			res.send('findUser catch: ' + error);
+  			});
+			}
+		})
 });
 
 app.post('/addScream', function(req, res) {
   // auth management is being handled in front end
 
   var screamData = req.body.params;
-  console.log('router.js, req.body: ', req.body.params);
 
   db.addScream(screamData)
     .then(function(result) {
@@ -217,6 +261,14 @@ app.post('/addAverages', function(req, res) {
     .then(function(result) {
       res.send(result);
     })
+});
+
+//
+app.post('/addScore', function(req, res) {
+	db.addScore(req.body.user, req.body.score)
+	.then(function(data) {
+		res.status(201).send(data);
+	})
 });
 
 module.exports = app;
